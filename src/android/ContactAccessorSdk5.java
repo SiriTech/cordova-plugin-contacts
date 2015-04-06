@@ -195,7 +195,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 {
                     String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     JSONObject ct = new JSONObject();
-                    ct.put("number",contactNumber);
+                    ct.put("phoneNumbers",contactNumber);
                     cts.put(ct);
                     break;
                 }
