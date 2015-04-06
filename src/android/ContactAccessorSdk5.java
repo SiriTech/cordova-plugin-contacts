@@ -179,7 +179,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 null,
                 null,
                 null);
-       JSONArray contacts = new JSONArray();
+       JSONArray cts = new JSONArray();
        
         // Create a set of unique ids
         Set<String> contactIds = new HashSet<String>();
@@ -194,9 +194,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);                while (pCur.moveToNext()) 
                 {
                     String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    JSONObject contact = new JSONObject();
-                    contact.put("number",contactNumber);
-                    contacts.put(contact);
+                    JSONObject ct = new JSONObject();
+                    ct.put("number",contactNumber);
+                    cts.put(contact);
                     break;
                 }
                 pCur.close();
