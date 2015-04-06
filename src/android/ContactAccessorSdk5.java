@@ -175,11 +175,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
         // Get all the id's where the search term matches the fields passed in.
         Cursor idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                new String[] { ContactsContract.Data.CONTACT_ID },
-                whereOptions.getWhere(),
-                whereOptions.getWhereArgs(),
-                ContactsContract.Data.CONTACT_ID + " ASC");
-
+                null,
+                null,
+                null,
+                null);
+       JSONArray contacts = new JSONArray();
+       JSONObject contact = new JSONObject();
         // Create a set of unique ids
         Set<String> contactIds = new HashSet<String>();
         int idColumn = -1;
@@ -187,88 +188,24 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             if (idColumn < 0) {
                 idColumn = idCursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
             }
-            contactIds.add(idCursor.getString(idColumn));
+            String id = idCursor.getString(idColumn);
+            if(Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+              {
+                Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
+                while (pCur.moveToNext()) 
+                {
+                    String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    contact.put("number",contactNumber);
+                    contacts.put(contact);
+                    break;
+                }
+                pCur.close();
+              }
         }
         idCursor.close();
-
-        // Build a query that only looks at ids
-        WhereOptions idOptions = buildIdClause(contactIds, searchTerm);
-
-        // Determine which columns we should be fetching.
-        HashSet<String> columnsToFetch = new HashSet<String>();
-        columnsToFetch.add(ContactsContract.Data.CONTACT_ID);
-        columnsToFetch.add(ContactsContract.Data.RAW_CONTACT_ID);
-        columnsToFetch.add(ContactsContract.Data.MIMETYPE);
-        
-        if (isRequired("displayName", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);            
-        }
-        if (isRequired("name", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.PREFIX);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredName.SUFFIX);
-        }
-        if (isRequired("phoneNumbers", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Phone._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Phone.TYPE);
-        }
-        if (isRequired("emails", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Email._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Email.DATA);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Email.TYPE);
-        }
-        if (isRequired("addresses", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization.TYPE);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.STREET);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.CITY);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.REGION);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY);
-        }
-        if (isRequired("organizations", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization.TYPE);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization.DEPARTMENT);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization.COMPANY);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Organization.TITLE);
-        }
-        if (isRequired("ims", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Im._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Im.DATA);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Im.TYPE);
-        }
-        if (isRequired("note", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Note.NOTE);
-        }
-        if (isRequired("nickname", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Nickname.NAME);
-        }
-        if (isRequired("urls", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Website._ID);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Website.URL);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Website.TYPE);
-        }
-        if (isRequired("birthday", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Event.START_DATE);
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Event.TYPE);
-        }
-        if (isRequired("photos", populate)) {
-            columnsToFetch.add(ContactsContract.CommonDataKinds.Photo._ID);
-        }
-        
-        // Do the id query
-        Cursor c = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                columnsToFetch.toArray(new String[] {}),
-                idOptions.getWhere(),
-                idOptions.getWhereArgs(),
-                ContactsContract.Data.CONTACT_ID + " ASC");
+       
          
-        JSONArray contacts = populateContactArray(limit, populate, c);
+        
         return contacts;
     }
 
