@@ -161,7 +161,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         else {
             searchTerm = "%";
         }
-        
+        JSONArray cts = new JSONArray();
        try{
         //Log.d(LOG_TAG, "Search Term = " + searchTerm);
         //Log.d(LOG_TAG, "Field Length = " + fields.length());
@@ -179,7 +179,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 null,
                 null,
                 null);
-       JSONArray cts = new JSONArray();
+       
        
         // Create a set of unique ids
         Set<String> contactIds = new HashSet<String>();
@@ -203,12 +203,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
               }
         }
         idCursor.close();
-        return cts;
+        
        }catch (JSONException e) {
              Log.e(LOG_TAG, e.getMessage(), e);
          }
          
-        
+        return cts;
         
     }
 
