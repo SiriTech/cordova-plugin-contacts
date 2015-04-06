@@ -49,11 +49,8 @@ var contacts = {
             // missing 'options' param means return all contacts
             options = options || {filter: '', multiple: true}
             var win = function(result) {
-                var cs = [];
-                for (var i = 0, l = result.length; i < l; i++) {
-                    cs.push(contacts.create(result[i]));
-                }
-                successCB(cs);
+                successCB(result);
+                
             };
             exec(win, errorCB, "Contacts", "search", [fields, options]);
         }
