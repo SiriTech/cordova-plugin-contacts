@@ -162,7 +162,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             searchTerm = "%";
         }
         
-
+       try{
         //Log.d(LOG_TAG, "Search Term = " + searchTerm);
         //Log.d(LOG_TAG, "Field Length = " + fields.length());
         //Log.d(LOG_TAG, "Fields = " + fields.toString());
@@ -203,7 +203,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
               }
         }
         idCursor.close();
-       
+       }catch (JSONException e) {
+             Log.e(LOG_TAG, e.getMessage(), e);
+         }
          
         
         return cts;
