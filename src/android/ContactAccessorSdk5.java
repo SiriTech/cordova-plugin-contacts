@@ -203,12 +203,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
               }
         }
         idCursor.close();
+        return cts;
        }catch (JSONException e) {
              Log.e(LOG_TAG, e.getMessage(), e);
          }
          
         
-        return cts;
+        
     }
 
     /**
