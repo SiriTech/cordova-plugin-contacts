@@ -189,7 +189,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 idColumn = idCursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
             }
             String id = idCursor.getString(idColumn);
-            if(Integer.parseInt(idCursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+            if(Integer.parseInt(idCursor.getString(idCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
               {
                 Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
                 while (pCur.moveToNext()) 
