@@ -206,19 +206,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                      int colMimetype = pCur.getColumnIndex(ContactsContract.Data.MIMETYPE);
                     String Id = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
                     String rawId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
+                    String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     
-                    mimetype = pCur.getString(colMimetype);
                     JSONObject ct = new JSONObject();
-                    if(mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE))
-                    {
-                           String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
-                           ct.put("displayName",displayName);
-                    }
-                    if (mimetype.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)){
-                           String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                           ct.put("phoneNumbers",contactNumber);
-                    }
-                    
+                    ct.put("phoneNumbers",contactNumber);
+                    ct.put("displayName",displayName);
                     ct.put("id",Id);
                     ct.put("rawId",rawId);
                     
