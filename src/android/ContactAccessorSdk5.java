@@ -151,8 +151,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                   String number = people.getString(indexNumber);
                   // Do work...
                   JSONObject ct = new JSONObject();
-                    ct.put("phoneNumbers",contactNumber);
-                    ct.put("displayName",displayName);
+                    ct.put("phoneNumbers",number);
+                    ct.put("displayName",name);
                     
                     
                     cts.put(ct);
