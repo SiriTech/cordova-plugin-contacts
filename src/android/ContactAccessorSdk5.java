@@ -179,8 +179,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 null,
                 null,
                 null);
-       
+       String contactId="";
        String oldContactId="";
+       String mimetype = "";
         // Create a set of unique ids
         Set<String> contactIds = new HashSet<String>();
         int idColumn = -1;
@@ -191,20 +192,36 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             String id = idCursor.getString(idColumn);
             if(Integer.parseInt(idCursor.getString(idCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
               {
-                Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);                while (pCur.moveToNext()) 
+                Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);                
+                while (pCur.moveToNext()) 
                 {
+                     contactId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
+                     // If we are in the first row set the oldContactId
+                    if (pCur.getPosition() == 0) {
+                        oldContactId = contactId;
+                    }
+                    if(!oldContactId.equals(contactId)){
+                     // Set the old contact ID
+                     oldContactId = contactId;
+                     int colMimetype = pCur.getColumnIndex(ContactsContract.Data.MIMETYPE);
                     String Id = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
                     String rawId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
                     String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
+                    mimetype = pCur.getString(colMimetype);
+                    if(mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE))
+                    {
+                           String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
+                           ct.put("displayName",displayName);
+                    }
+                    
                     JSONObject ct = new JSONObject();
                     ct.put("id",Id);
                     ct.put("rawId",rawId);
                     ct.put("phoneNumbers",contactNumber);
-                    ct.put("displayName",displayName);
                     
                     cts.put(ct);
                     break;
+                    }
                 }
                 pCur.close();
               }
