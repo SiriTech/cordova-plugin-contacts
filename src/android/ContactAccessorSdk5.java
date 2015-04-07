@@ -194,8 +194,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);                while (pCur.moveToNext()) 
                 {
                     String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
                     JSONObject ct = new JSONObject();
                     ct.put("phoneNumbers",contactNumber);
+                    ct.put("displayName",displayName);
                     cts.put(ct);
                     break;
                 }
