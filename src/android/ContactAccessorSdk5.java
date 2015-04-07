@@ -208,13 +208,14 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                     String rawId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
                     String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     mimetype = pCur.getString(colMimetype);
+                    JSONObject ct = new JSONObject();
                     if(mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE))
                     {
                            String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
                            ct.put("displayName",displayName);
                     }
                     
-                    JSONObject ct = new JSONObject();
+                    
                     ct.put("id",Id);
                     ct.put("rawId",rawId);
                     ct.put("phoneNumbers",contactNumber);
