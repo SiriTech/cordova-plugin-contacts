@@ -159,7 +159,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
               } while (people.moveToNext());
                 
                 people.close();
-              }
+              
         
         
        }catch (JSONException e) {
