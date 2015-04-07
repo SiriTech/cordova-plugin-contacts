@@ -135,99 +135,36 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     @Override
     public JSONArray search(JSONArray fields, JSONObject options) {
-        // Get the find options
-        String searchTerm = "";
-        int limit = Integer.MAX_VALUE;
-        boolean multiple = true;
-
-        if (options != null) {
-            searchTerm = options.optString("filter");
-            if (searchTerm.length() == 0) {
-                searchTerm = "%";
-            }
-            else {
-                searchTerm = "%" + searchTerm + "%";
-            }
-            
-            try {
-                multiple = options.getBoolean("multiple");
-                if (!multiple) {
-                    limit = 1;
-                }
-            } catch (JSONException e) {
-                // Multiple was not specified so we assume the default is true.
-            }
-        }
-        else {
-            searchTerm = "%";
-        }
+        
         JSONArray cts = new JSONArray();
        try{
-        //Log.d(LOG_TAG, "Search Term = " + searchTerm);
-        //Log.d(LOG_TAG, "Field Length = " + fields.length());
-        //Log.d(LOG_TAG, "Fields = " + fields.toString());
-
-        // Loop through the fields the user provided to see what data should be returned.
-        HashMap<String, Boolean> populate = buildPopulationSet(options);
-
-        // Build the ugly where clause and where arguments for one big query.
-        WhereOptions whereOptions = buildWhereClause(fields, searchTerm);
-
-        // Get all the id's where the search term matches the fields passed in.
-        Cursor idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
-       String contactId="";
-       String oldContactId="";
-       String mimetype = "";
-        // Create a set of unique ids
-        Set<String> contactIds = new HashSet<String>();
-        int idColumn = -1;
-        while (idCursor.moveToNext()) {
-            if (idColumn < 0) {
-                idColumn = idCursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
-            }
-            String id = idCursor.getString(idColumn);
-            if(Integer.parseInt(idCursor.getString(idCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
-              {
-                Cursor pCur = mApp.getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);                
-                while (pCur.moveToNext()) 
-                {
-                     contactId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-                     // If we are in the first row set the oldContactId
-                    if (pCur.getPosition() == 0) {
-                        oldContactId = contactId;
-                    }
-                    //if(!oldContactId.equals(contactId)){
-                     // Set the old contact ID
-                     oldContactId = contactId;
-                     int colMimetype = pCur.getColumnIndex(ContactsContract.Data.MIMETYPE);
-                    String Id = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-                    String rawId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
-                    String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    
-                    JSONObject ct = new JSONObject();
+              Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+              String[] projection    = new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+               ContactsContract.CommonDataKinds.Phone.NUMBER};
+              Cursor people = mApp.getActivity().getContentResolver().query(uri,projection,null,null, null);                
+              int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+              int indexNumber = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+              
+              people.moveToFirst();
+              do {
+                  String name   = people.getString(indexName);
+                  String number = people.getString(indexNumber);
+                  // Do work...
+                  JSONObject ct = new JSONObject();
                     ct.put("phoneNumbers",contactNumber);
                     ct.put("displayName",displayName);
-                    ct.put("id",Id);
-                    ct.put("rawId",rawId);
                     
                     
                     cts.put(ct);
-                    break;
-                    //}
-                }
-                pCur.close();
+              } while (people.moveToNext());
+                
+                people.close();
               }
-        }
-        idCursor.close();
+        
         
        }catch (JSONException e) {
              Log.e(LOG_TAG, e.getMessage(), e);
-         }
+       }
          
         return cts;
         
