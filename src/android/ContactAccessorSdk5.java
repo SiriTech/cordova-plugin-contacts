@@ -200,13 +200,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                     if (pCur.getPosition() == 0) {
                         oldContactId = contactId;
                     }
-                    if(!oldContactId.equals(contactId)){
+                    //if(!oldContactId.equals(contactId)){
                      // Set the old contact ID
                      oldContactId = contactId;
                      int colMimetype = pCur.getColumnIndex(ContactsContract.Data.MIMETYPE);
                     String Id = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.CONTACT_ID));
                     String rawId = pCur.getString(pCur.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
-                    String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    
                     mimetype = pCur.getString(colMimetype);
                     JSONObject ct = new JSONObject();
                     if(mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE))
@@ -214,15 +214,18 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                            String displayName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME));
                            ct.put("displayName",displayName);
                     }
-                    
+                    if (mimetype.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)){
+                           String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                           ct.put("phoneNumbers",contactNumber);
+                    }
                     
                     ct.put("id",Id);
                     ct.put("rawId",rawId);
-                    ct.put("phoneNumbers",contactNumber);
+                    
                     
                     cts.put(ct);
                     break;
-                    }
+                    //}
                 }
                 pCur.close();
               }
